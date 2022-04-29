@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+require("dotenv").config();
 const mongoose = require('mongoose');
 
 mongoose.connect("mongodb://mrrestoadmin:--%2a%2ar1e2s3t4o5%2a%2a--@147.135.1.51:27017/resto?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false",

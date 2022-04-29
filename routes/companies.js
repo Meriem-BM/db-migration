@@ -1,26 +1,40 @@
 var express = require('express');
 const companyModel = require('../models/company');
-var app = express();
 const getData = require('../helpers/getdata')
+const axios = require('axios')
+var app = express();
 
 async function clearCompnay(){
-  let companies = await getData(companyModel, 1)
+  let companies = await getData(companyModel)
   let newData = []
   for (let i = 0; i < companies.length; i++) {
     let newCompany = {}
     console.log(companies[i]);
-    newCompany.name = companies[i].company_info.name
-    newCompany.address = companies[i].company_info.address
-    newCompany.description = companies[i].description
-    newCompany.logo = companies[i].logo
-    newCompany.created_at = companies[i].created_at
+    newCompany.name = companies[i]._doc.company_info.name || ''
+    newCompany.address = companies[i]._doc.company_info.address
+    newCompany.description = companies[i]._doc.description || ''
+    newCompany.logo = companies[i]._doc.logo || ''
+    newCompany.created_at = companies[i]._doc.created_at
+    newCompany.updated_at = companies[i]._doc.updated_at
     newData.push(newCompany)
   }
   return newData
 }
 
 app.post('/', async (req, res) => {
-  return res.send(await clearCompnay())
+  const company = await clearCompnay()
+  console.log(company)
+  let insertedcharge
+  await axios.post(process.env.queryInterface, {
+    collection: 'companies',
+    data: company
+  }).catch(e => {
+    console.log(e);
+    res.send(e)
+  }).then(({ result }) => {
+    insertedcharge = result
+  });
+  return res.send(insertedcharge)
 })
 
 module.exports = app;

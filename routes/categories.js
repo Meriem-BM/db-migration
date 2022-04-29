@@ -1,26 +1,40 @@
 var express = require('express');
-const ordersModel = require('../models/order');
-var app = express();
+const categoryModel = require('../models/category');
 const getData = require('../helpers/getdata')
+const axios = require('axios')
+var app = express();
 
-async function clearOrder(){
-  let orders = await getData(ordersModel, 2)
+async function clearCategory(){
+  let categories = await getData(categoryModel)
   let newData = []
-  for (let i = 0; i < orders.length; i++) {
-    let newOrder = {}
-    for (orderKey of Object.keys(orders[i]._doc))
-    {
-      if(orderKey!="_id" && orderKey!="whendatetime" && orderKey!="__v"){
-        newOrder[orderKey] = orders[i]._doc[orderKey]
-        }
-    }
-    newData.push(newOrder)
+  for (let i = 0; i < categories.length; i++) {
+    let newCategory = {}
+    console.log(categories[i]);
+    newCategory.name = categories[i]._doc.name || ''
+    newCategory.img = categories[i]._doc.img
+    newCategory.company = categories[i]._doc.description || ''
+    newCategory.approved = false
+    newCategory.created_at = companies[i]._doc.created_at
+    newCategory.updated_at = companies[i]._doc.updated_at
+    newData.push(newCategory)
   }
   return newData
 }
 
 app.post('/', async (req, res) => {
-  return res.send(await clearOrder())
+  const company = await clearCategory()
+  console.log(company)
+  let insertedData
+  await axios.post(process.env.queryInterface, {
+    collection: 'categories',
+    data: company
+  }).catch(e => {
+    console.log(e);
+    res.send(e)
+  }).then(({ result }) => {
+    insertedData = result
+  });
+  return res.send(insertedData)
 })
 
 module.exports = app;
