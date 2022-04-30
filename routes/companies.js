@@ -10,6 +10,7 @@ async function clearCompnay(){
   for (let i = 0; i < companies.length; i++) {
     let newCompany = {}
     console.log(companies[i]);
+    newCompany.oid = companies[i]._doc._id
     newCompany.name = companies[i]._doc.company_info.name || ''
     newCompany.address = companies[i]._doc.company_info.address
     newCompany.description = companies[i]._doc.description || ''
